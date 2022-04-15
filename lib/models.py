@@ -48,28 +48,3 @@ class MultiLayerModel(nn.Module):
             torch.nn.init.zeros_(self.net[i].bias)
         torch.nn.init.kaiming_uniform_(self.net[-1].weight)
         torch.nn.init.zeros_(self.net[-1].bias)
-
-def train(model, loss_fn, optimizer, epochs, x, y, step, x_test=None, y_test=None):
-    model.train()
-    ret = 0
-    hist = []
-    for i in range(epochs):
-        optimizer.zero_grad()
-        pred = model(x)
-        loss = loss_fn(pred, y)
-        loss.backward()
-        optimizer.step()
-        ret = loss.item()
-        if i % step == 0:
-            print("epoch = {}, loss = {}".format(i, loss.item()))
-            if x_test is None:
-                print(40 * '-')
-                continue
-            model.eval()
-            pred = torch.argmax(model(x_test), dim=1)
-            acc = torch.sum(pred == y_test).item() / 10000
-            print("accuracy = {}".format(acc))
-            print(40 * '-')
-            hist.append(acc)
-    return hist
-
