@@ -7,6 +7,8 @@ import numpy as np
 from matplotlib import pyplot as plt
 import time
 
+torch.manual_seed(42)
+
 class OneLayerModel(nn.Module):
 
     def __init__(self, input_shape, hidden_shape, out_shape):
@@ -21,11 +23,11 @@ class OneLayerModel(nn.Module):
         return self.net(x)
 
     def init_weights(self):
-        nn.init.kaiming_uniform_(self.net["hidden_layer"].weight, 
+        nn.init.kaiming_uniform_(self.net[0].weight, 
                     nonlinearity="relu")
-        nn.init.zeros_(self.net["hidden_layer"].bias)
-        nn.init.kaiming_uniform_(self.net["out_layer"].weight)
-        nn.init.zeros_(self.net["out_layer"].bias)
+        nn.init.zeros_(self.net[0].bias)
+        nn.init.kaiming_uniform_(self.net[-1].weight)
+        nn.init.zeros_(self.net[-1].bias)
 
 class MultiLayerModel(nn.Module):
     
@@ -34,17 +36,16 @@ class MultiLayerModel(nn.Module):
         list_of_layers = [nn.Linear(input_shape, layers[0]), nn.ReLU()]
         for i in range(1, len(layers)):
             list_of_layers.append(nn.Linear(layers[i - 1], layers[i]))
-            list_of_layers.append(nn.ReLU())
+            list_of_layers.append(nn.ReLU())    
         list_of_layers.append(nn.Linear(layers[-1], out_shape))
         self.net = nn.Sequential(*list_of_layers)
         
     def forward(self, x):
         return self.net(x)
 
-    def init_weights(self, seed):
-        torch.manual_seed(seed)
+    def init_weights(self):
         for i in range(0, len(self.net) - 1, 2):
             torch.nn.init.kaiming_uniform_(self.net[i].weight, nonlinearity='relu')
-            torch.nn.init.zeros_(self.net[i].bias)
+            torch.nn.init.normal_(self.net[i].bias)
         torch.nn.init.kaiming_uniform_(self.net[-1].weight)
-        torch.nn.init.zeros_(self.net[-1].bias)
+        torch.nn.init.normal_(self.net[-1].bias)

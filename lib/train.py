@@ -22,8 +22,8 @@ def train(model, loss_fn, optimizer, epochs, x, y, step, x_test=None, y_test=Non
         loss.backward()
         optimizer.step()
         ret = loss.item()
-        if i % step == 0:
-            print("epoch = {}, loss = {}".format(i, loss.item()))
+        if (i + 1) % step == 0:
+            print("epoch = {}, loss = {}".format(i + 1, loss.item()))
             if x_test is None:
                 print(40 * '-')
                 continue
@@ -35,15 +35,16 @@ def train(model, loss_fn, optimizer, epochs, x, y, step, x_test=None, y_test=Non
             hist.append(acc)
     return hist
 
-def train_hist(models, iters, epochs, X, y, x_test=None, y_test=None):
-    optimizer0 = torch.optim.Adam(models[0].parameters())
-    optimizer1 = torch.optim.Adam(models[1].parameters())
+def train_hist(models, iters, epochs, X, y, step, x_test=None, y_test=None):
+    optimizer0 = torch.optim.Adam(models[0].parameters(), lr=0.005)
+    optimizer1 = torch.optim.Adam(models[1].parameters(), lr=0.005)
     loss_fn = nn.MSELoss()
     for elem in os.listdir("simple_history"):
         os.remove("simple_history/" + elem)
     for i in range(iters):
-        loss1 = train(models[0], loss_fn, optimizer0, epochs, X, y, epochs, x_test, y_test)
-        loss2 = train(models[1], loss_fn, optimizer1, epochs, X, y, epochs, x_test, y_test)
+        print('ITER={}\n'.format(i + 1))
+        loss1 = train(models[0], loss_fn, optimizer0, epochs, X, y, step, x_test, y_test)
+        loss2 = train(models[1], loss_fn, optimizer1, epochs, X, y, step, x_test, y_test)
         plt.figure(figsize=(10, 10))
         plt.plot(X, y)
         plt.plot(X, models[0](X).reshape(-1).detach().numpy(), label='model1')

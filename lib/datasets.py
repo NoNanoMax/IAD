@@ -1,5 +1,6 @@
 import torch
 import torchvision
+import numpy as np
 
 def load_MNIST():
     data_train = torchvision.datasets.MNIST('MNIST', download=False)
@@ -18,7 +19,7 @@ def func(x):
     por = np.linspace(0, 4, 5)
     ans = torch.zeros_like(x)
     for i in range(1, len(por)):
-        ans[(x <= por[i]) * (x > por[i - 1])] = por[i] * 3
+        ans[(x <= por[i]) * (x > por[i - 1])] = por[i] * 3 
     return ans + torch.rand_like(ans) * 0.01
 
 def func1(x):
