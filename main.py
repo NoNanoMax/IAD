@@ -43,6 +43,7 @@ def parse():
     return parcer.parse_args()
 
 if __name__ == '__main__':
+    torch.manual_seed(42)
     p = parse()
     inn, out = 1, 1
 
@@ -65,7 +66,7 @@ if __name__ == '__main__':
     model2.init_weights()
 
     if p.func != 'MNIST':
-        x = torch.tensor(np.linspace(0, 4, 101))
+        x = torch.tensor(np.linspace(0, 4, 201))
         if p.func == 'func': y = data.func(x)
         if p.func == 'func1': y = data.func1(x)
         if p.func == 'func2': y = data.func2(x)
@@ -76,8 +77,13 @@ if __name__ == '__main__':
         X = x.reshape(-1, 1).to(dtype=torch.float32)
         Y = y.reshape(-1, 1).to(dtype=torch.float32)
 
-        train.train_hist([model1, model2], 20, 200, X, Y, 100)
+        train.train_hist([model1, model2], 30, 50, X, Y, 50)
         train.generate_gif(p.save_gif)
+    else:
+        (X_train, Y_train) = data.load_MNIST()["train"]
+        (X_test, Y_test) = data.load_MNIST()["test"]
+        train.train_MNIST([model1, model2], 120, X_train, Y_train, X_test, Y_test, 5, p.save_gif)
+
 
         
 

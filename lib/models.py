@@ -7,14 +7,13 @@ import numpy as np
 from matplotlib import pyplot as plt
 import time
 
-torch.manual_seed(42)
-
 class OneLayerModel(nn.Module):
 
     def __init__(self, input_shape, hidden_shape, out_shape):
         super().__init__()
         self.net = nn.Sequential(OrderedDict([
             ("hidden_layer", nn.Linear(input_shape, hidden_shape)),
+            ("norm", nn.BatchNorm1d(hidden_shape)),
             ("relu", nn.ReLU()),
             ("out_layer", nn.Linear(hidden_shape, out_shape))
         ]))
@@ -23,18 +22,18 @@ class OneLayerModel(nn.Module):
         return self.net(x)
 
     def init_weights(self):
-        nn.init.kaiming_uniform_(self.net[0].weight, 
-                    nonlinearity="relu")
-        nn.init.zeros_(self.net[0].bias)
+        nn.init.kaiming_uniform_(self.net[0].weight)
+        nn.init.ones_(self.net[0].bias)
         nn.init.kaiming_uniform_(self.net[-1].weight)
-        nn.init.zeros_(self.net[-1].bias)
+        nn.init.ones_(self.net[-1].bias)
 
 class MultiLayerModel(nn.Module):
     
     def __init__(self, input_shape, out_shape, layers):
         super().__init__()
         list_of_layers = [nn.Linear(input_shape, layers[0]), nn.ReLU()]
-        for i in range(1, len(layers)):
+        for i in range(1, len(layers)): 
+            list_of_layers.append(nn.BatchNorm1d(layers[i - 1]))
             list_of_layers.append(nn.Linear(layers[i - 1], layers[i]))
             list_of_layers.append(nn.ReLU())    
         list_of_layers.append(nn.Linear(layers[-1], out_shape))
@@ -44,8 +43,8 @@ class MultiLayerModel(nn.Module):
         return self.net(x)
 
     def init_weights(self):
-        for i in range(0, len(self.net) - 1, 2):
-            torch.nn.init.kaiming_uniform_(self.net[i].weight, nonlinearity='relu')
+        for i in range(0, len(self.net) - 1, 3):
+            torch.nn.init.kaiming_uniform_(self.net[i].weight, nonlinearity="relu")
             torch.nn.init.normal_(self.net[i].bias)
         torch.nn.init.kaiming_uniform_(self.net[-1].weight)
         torch.nn.init.normal_(self.net[-1].bias)

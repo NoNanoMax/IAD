@@ -1,10 +1,11 @@
 import torch
 import torchvision
 import numpy as np
+import os
 
 def load_MNIST():
-    data_train = torchvision.datasets.MNIST('MNIST', download=False)
-    data_test = torchvision.datasets.MNIST('MNIST', train=False, download=False)
+    data_train = torchvision.datasets.MNIST('datasets', download=False)
+    data_test = torchvision.datasets.MNIST('datasets', train=False, download=False)
 
     X_train = data_train.data.reshape(60000, -1).to(dtype=torch.float32)
     X_test = data_test.data.reshape( 10000, -1).to(dtype=torch.float32)
