@@ -3,9 +3,9 @@
 # Set these to get your notebooks running!
 IMAGE_NAME="bebop-gpu:0.3.0"
 # COMMON_STORAGE=/mnt/meteo-storage/common
-# DOCKER_JUPYTER_PORT=9080
-# DOCKER_TENSORBOARD_PORT=9081
-# WORKINGDIR=/mnt/meteo-storage/maximdanilov
+DOCKER_JUPYTER_PORT=9080
+DOCKER_TENSORBOARD_PORT=9081
+WORKINGDIR=/mnt/meteo-storage/maximdanilov
 
 if [ -z ${DOCKER_JUPYTER_PORT+UNSET} ]; then
 	echo "Please set DOCKER_JUPYTER_PORT"
